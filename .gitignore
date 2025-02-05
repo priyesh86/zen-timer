@@ -1,0 +1,32 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+
+# build
+.next/
+out/
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE/Editor folders
+.vscode/
+.idea/
+*.swp
+*.swo
