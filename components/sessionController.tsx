@@ -89,6 +89,11 @@ export function SessionController({
     return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
+  const getProgressPercentage = () => {
+    const totalEvents = schedule.length;
+    return ((sessionState.currentIndex + 1) / totalEvents) * 100;
+  };
+
   return (
     <div className="space-y-8">
       <div className="rounded-lg border p-6 text-center">
@@ -109,6 +114,64 @@ export function SessionController({
           )}
         </div>
       </div>
+
+      {/* New Progress and Schedule Display */}
+      {sessionState.isRunning && (
+        <div className="rounded-lg border p-6">
+          {/* Overall Progress Bar */}
+          <div className="mb-6">
+            <div className="mb-2 flex justify-between text-sm text-gray-600">
+              <span>Progress</span>
+              <span>{Math.round(getProgressPercentage())}%</span>
+            </div>
+            <div className="h-2 w-full rounded-full bg-gray-200">
+              <div
+                className="h-full rounded-full bg-blue-600 transition-all duration-300"
+                style={{ width: `${getProgressPercentage()}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Schedule Timeline */}
+          <div className="space-y-2">
+            <h3 className="font-semibold">Session Timeline</h3>
+            <div className="space-y-1">
+              {schedule.map((item, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center justify-between rounded-md p-2 transition-colors ${
+                    index === sessionState.currentIndex
+                      ? "bg-blue-50 border border-blue-200"
+                      : index < sessionState.currentIndex
+                        ? "text-gray-500"
+                        : ""
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`h-2 w-2 rounded-full ${
+                        index === sessionState.currentIndex
+                          ? "bg-blue-500"
+                          : index < sessionState.currentIndex
+                            ? "bg-gray-400"
+                            : "bg-gray-300"
+                      }`}
+                    />
+                    <span className="font-mono text-sm">{item.time}</span>
+                  </div>
+                  <span
+                    className={`${
+                      index === sessionState.currentIndex ? "font-medium" : ""
+                    }`}
+                  >
+                    {item.event}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Prompts for different phases */}
       {sessionState.isRunning && (
