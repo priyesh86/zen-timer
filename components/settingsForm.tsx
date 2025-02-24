@@ -4,6 +4,7 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { SessionController } from "./sessionController";
 
 import { Button } from "./ui/button";
 import {
@@ -102,6 +103,7 @@ export function generateSchedule(values: z.infer<typeof SettingsSchema>) {
 
 export function SettingsForm() {
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
+  const [isSessionActive, setIsSessionActive] = useState(false);
 
   const form = useForm<z.infer<typeof SettingsSchema>>({
     resolver: zodResolver(SettingsSchema),
@@ -120,182 +122,196 @@ export function SettingsForm() {
   async function onSubmit(values: z.infer<typeof SettingsSchema>) {
     const generatedSchedule = generateSchedule(values);
     setSchedule(generatedSchedule);
+    setIsSessionActive(true);
   }
+
+  const handleCancelSession = () => {
+    setIsSessionActive(false);
+    setSchedule([]);
+  };
 
   return (
     <div className="w-full max-w-2xl">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="session"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Total length of session</FormLabel>
-                <FormDescription>
-                  How long do you want to work for?
-                </FormDescription>
-                <FormControl>
-                  <Input
-                    type="time"
-                    {...field}
-                    onChange={(e) => field.onChange(e.target.value + ":00")} // Ensure HH:MM:SS format
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="sprint"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Sprint time</FormLabel>
-                <FormDescription>
-                  How long do you want each sprint to last?
-                </FormDescription>
-                <FormControl>
-                  <Input
-                    type="time"
-                    {...field}
-                    onChange={(e) => field.onChange(e.target.value + ":00")} // Ensure HH:MM:SS format
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="bell"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Bell intervals</FormLabel>
-                <FormDescription>
-                  How far apart do you want the bells to chime?
-                </FormDescription>
-                <FormControl>
-                  <Input
-                    type="time"
-                    {...field}
-                    onChange={(e) => field.onChange(e.target.value + ":00")} // Ensure HH:MM:SS format
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="intentionSetting"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Intention setting</FormLabel>
-                <FormControl>
-                  <Input
-                    type="time"
-                    {...field}
-                    onChange={(e) => field.onChange(e.target.value + ":00")} // Ensure HH:MM:SS format
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="reflection"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Reflection time</FormLabel>
-                <FormControl>
-                  <Input
-                    type="time"
-                    {...field}
-                    onChange={(e) => field.onChange(e.target.value + ":00")} // Ensure HH:MM:SS format
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="regularBreak"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Regular break time</FormLabel>
-                <FormControl>
-                  <Input
-                    type="time"
-                    {...field}
-                    onChange={(e) => field.onChange(e.target.value + ":00")} // Ensure HH:MM:SS format
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="longerBreak"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Longer break time</FormLabel>
-                <FormControl>
-                  <Input
-                    type="time"
-                    {...field}
-                    onChange={(e) => field.onChange(e.target.value + ":00")} // Ensure HH:MM:SS format
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="backgroundSound"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                <FormLabel>Background breathing drone</FormLabel>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange} // FIX: styling - related to tailwind config and theme colours
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <Button type="submit">Calculate session</Button>
-        </form>
-      </Form>
+      {!isSessionActive ? (
+        <>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="session"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Total length of session</FormLabel>
+                    <FormDescription>
+                      How long do you want to work for?
+                    </FormDescription>
+                    <FormControl>
+                      <Input
+                        type="time"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value + ":00")} // Ensure HH:MM:SS format
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="sprint"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sprint time</FormLabel>
+                    <FormDescription>
+                      How long do you want each sprint to last?
+                    </FormDescription>
+                    <FormControl>
+                      <Input
+                        type="time"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value + ":00")} // Ensure HH:MM:SS format
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="bell"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Bell intervals</FormLabel>
+                    <FormDescription>
+                      How far apart do you want the bells to chime?
+                    </FormDescription>
+                    <FormControl>
+                      <Input
+                        type="time"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value + ":00")} // Ensure HH:MM:SS format
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="intentionSetting"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Intention setting</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="time"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value + ":00")} // Ensure HH:MM:SS format
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="reflection"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Reflection time</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="time"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value + ":00")} // Ensure HH:MM:SS format
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="regularBreak"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Regular break time</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="time"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value + ":00")} // Ensure HH:MM:SS format
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="longerBreak"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Longer break time</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="time"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value + ":00")} // Ensure HH:MM:SS format
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="backgroundSound"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <FormLabel>Background breathing drone</FormLabel>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange} // FIX: styling - related to tailwind config and theme colours
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Button type="submit">Calculate session</Button>
+            </form>
+          </Form>
 
-      {schedule.length > 0 && (
-        <div className="mt-8 rounded-lg border p-6 shadow-sm">
-          <h2 className="mb-4 text-xl font-semibold">Your Session Schedule</h2>
-          <div className="space-y-2">
-            {schedule.map((item, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between rounded-md border p-3 transition-colors hover:bg-gray-50"
-              >
-                <span className="font-mono text-sm text-gray-600">
-                  {item.time}
-                </span>
-                <span
-                  className={`font-medium ${
-                    item.event === "Sprint"
-                      ? "text-green-600"
-                      : item.event.includes("Break")
-                        ? "text-blue-600"
-                        : item.event === "End"
-                          ? "text-red-600"
-                          : "text-gray-600"
-                  }`}
-                >
-                  {item.event}
-                </span>
+          {schedule.length > 0 && (
+            <div className="mt-8 rounded-lg border p-6 shadow-sm">
+              <h2 className="mb-4 text-xl font-semibold">
+                Your Session Schedule
+              </h2>
+              <div className="space-y-2">
+                {schedule.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-md border p-3 transition-colors hover:bg-gray-50"
+                  >
+                    <span className="font-mono text-sm text-gray-600">
+                      {item.time}
+                    </span>
+                    <span
+                      className={`font-medium ${
+                        item.event === "Sprint"
+                          ? "text-green-600"
+                          : item.event.includes("Break")
+                            ? "text-blue-600"
+                            : item.event === "End"
+                              ? "text-red-600"
+                              : "text-gray-600"
+                      }`}
+                    >
+                      {item.event}
+                    </span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          )}
+        </>
+      ) : (
+        <SessionController schedule={schedule} onCancel={handleCancelSession} />
       )}
     </div>
   );
